@@ -2,9 +2,7 @@ from pyspark.sql import *
 import pyspark.sql.functions as F
 import pyspark.sql.types as T
 from pyspark.sql.functions  import date_format
-import base64
-from pyspark.sql.types import StringType
-from Crypto.Cipher import AES
+
 
 #Extreacting data from Azure Blob Storage.
              
