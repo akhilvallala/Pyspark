@@ -54,8 +54,11 @@ def RemoveSpecialChar(df):
 def ApplyTransformation(df):
   df = DisplayDuplicateRecords(df)
   df = DropDulicate(df)
-  df = dateformat(df,)
-
+  df = dateformat(df,"yyyy MM dd")
+  df = RemoveSpecialChar(df)
+  return df
+  
+final_df = ApplyTransformation(df)
 #Load into database
 jdbcHostname = "azsqlshackserver.database.windows.net"
 jdbcPort = "1433"
@@ -65,8 +68,4 @@ properties = {
  "password" : "******" }
 
 url = "jdbc:sqlserver://{0}:{1};database={2}".format(jdbcHostname,jdbcPort,jdbcDatabase)
-mydf = sqlContext.read.csv("/FileStore/tables/1000_Sales_Records-d540d.csv",header=True)
-
-
-myfinaldf = DataFrameWriter(mydf)
-myfinaldf.jdbc(url=url, table= "TotalProfit", mode ="overwrite", properties = properties)
+final_df.jdbc(url=url, table= "TotalProfit", mode ="overwrite", properties = properties)
