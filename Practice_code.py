@@ -17,6 +17,19 @@ df = spark.read.text("/mnt/<mount-name>/...")
 
 #Tranformations Funatcions,
 
+#Display duplicate records
+def DisplayDuplicateRecords(dfWithDuplicates):
+  try:
+    dataframe = dfWithDuplicates.groupBy(dfWithDuplicates.columns).count().filter("count>1").drop('count')
+    return dataframe
+  except Exception as findduperecords:
+    raise findduperecords
+    
+#Drop Dulpicate records
+def DropDulicate(df):
+  new_df = df.dropDuplicates()
+  return new_df
+
 #date format
 def dateformat(df,format):
   try:
@@ -27,6 +40,15 @@ def dateformat(df,format):
     return df
   except Exception as dateformaterror:
     raise dateformaterror
+#Remove Special char    
+def removespecialchar(df):
+  try:
+    for column in df.columns:
+      new_df = df.withColumn(column, F.regexp_replace(F.col(column), "[^A-Za-z0-9_@!#%&*()+={}''<>,.""-:;~`/|\?]", ""));
+    return new_df
+  except Exception as specialcharerror:
+    raise specialcharerror
+    
 
 #Load into database
 jdbcHostname = "azsqlshackserver.database.windows.net"
