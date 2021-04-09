@@ -5,14 +5,17 @@ from pyspark.sql.functions  import date_format
 import pandas as pd
 
 
-#Extreacting data from Azure Blob Storage.
+#Extracting data from Azure Blob Storage.
              
 dbutils.fs.mount(
   source = "wasbs://<container-name>@<storage-account-name>.blob.core.windows.net",
   mount_point = "/mnt/<mount-name>",
   extra_configs = {"<conf-key>":dbutils.secrets.get(scope = "<scope-name>", key = "<key-name>")})
 
-#Tranformations,
+#Cob=nverting data into dataframe
+df = spark.read.text("/mnt/<mount-name>/...")
+
+#Tranformations Funatcions,
 
 #date format
 def dateformat(df,format):
