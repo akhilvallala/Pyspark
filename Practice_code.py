@@ -15,7 +15,7 @@ dbutils.fs.mount(
 #Cob=nverting data into dataframe
 df = spark.read.text("/mnt/<mount-name>/...")
 
-#Tranformations Funatcions,
+#Basic Tranformations
 
 #Display duplicate records
 def DisplayDuplicateRecords(dfWithDuplicates):
