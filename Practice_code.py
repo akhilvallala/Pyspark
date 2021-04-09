@@ -2,6 +2,7 @@ from pyspark.sql import *
 import pyspark.sql.functions as F
 import pyspark.sql.types as T
 from pyspark.sql.functions  import date_format
+import pandas as pd
 
 
 #Extreacting data from Azure Blob Storage.
@@ -35,7 +36,6 @@ properties = {
 url = "jdbc:sqlserver://{0}:{1};database={2}".format(jdbcHostname,jdbcPort,jdbcDatabase)
 mydf = sqlContext.read.csv("/FileStore/tables/1000_Sales_Records-d540d.csv",header=True)
 
-from pyspark.sql import *
-import pandas as pd
+
 myfinaldf = DataFrameWriter(mydf)
 myfinaldf.jdbc(url=url, table= "TotalProfit", mode ="overwrite", properties = properties)
