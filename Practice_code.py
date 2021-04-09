@@ -40,8 +40,9 @@ def dateformat(df,format):
     return df
   except Exception as dateformaterror:
     raise dateformaterror
-#Remove Special char    
-def removespecialchar(df):
+    
+#Remove Special char in dataframe    
+def RemoveSpecialChar(df):
   try:
     for column in df.columns:
       new_df = df.withColumn(column, F.regexp_replace(F.col(column), "[^A-Za-z0-9_@!#%&*()+={}''<>,.""-:;~`/|\?]", ""));
@@ -49,6 +50,11 @@ def removespecialchar(df):
   except Exception as specialcharerror:
     raise specialcharerror
     
+#Apply Transformation
+def ApplyTransformation(df):
+  df = DisplayDuplicateRecords(df)
+  df = DropDulicate(df)
+  df = dateformat(df,)
 
 #Load into database
 jdbcHostname = "azsqlshackserver.database.windows.net"
