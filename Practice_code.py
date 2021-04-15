@@ -75,7 +75,21 @@ def datamismatchrecords(dfsource, dftarget):
   except:
     raise Exception("There is a data mismatch between two dataframes in particular records as mentioned above")
     
-
+def nullvalidation(df,nonnullablecolumns):
+  result = ""
+  for column in nonnullablecolumns:
+    non_acceptable_values_count = 0
+    number_of_nulls_in_column = df.where(F.col(column).isNull()).count()
+    number_of_nan_in_column = df.where(F.isnan(column)).count()
+    non_acceptable_values_count += number_of_nulls_in_column + number_of_nan_in_column
+    if non_acceptable_values_count == 0:
+      pass
+    else:
+      result += "column "+column+" as null values in it: "+str(number_of_nulls_in_column)
+      result += ","
+      result += "column "+column+" as nan values in it: "+str(number_of_nan_in_column)
+      result += "."
+  return result
     
 #Apply Transformation
 def ApplyTransformation(df):
