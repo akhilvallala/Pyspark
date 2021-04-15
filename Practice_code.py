@@ -50,6 +50,33 @@ def RemoveSpecialChar(df):
   except Exception as specialcharerror:
     raise specialcharerror
     
+def datamismatchcolumns(dfsource,dftarget):
+  try:
+    list_col=[]
+    count = 0
+    cols=dfsource.columns
+    for col in cols:
+      list_col.append(dfsource.select(col).subtract(dftarget.select(col)))
+    for  l in list_col :
+      if l.count() > 0 :
+        count+=1
+        display(l)
+    if count == 0:
+      return True
+    else:
+      raise Exception
+  except:
+    raise Exception("There is a data mismatch between particular columns as mentioned above")
+    
+def datamismatchrecords(dfsource, dftarget):
+  try:
+    final_df = dfsource.subtract(dftarget)
+    return final_df
+  except:
+    raise Exception("There is a data mismatch between two dataframes in particular records as mentioned above")
+    
+
+    
 #Apply Transformation
 def ApplyTransformation(df):
   df = DisplayDuplicateRecords(df)
