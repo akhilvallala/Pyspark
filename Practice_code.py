@@ -50,6 +50,13 @@ def RemoveSpecialChar(df):
   except Exception as specialcharerror:
     raise specialcharerror
     
+def roundingoff(df,column_name,round_no):
+  try:
+    df = df.withColumn(column_name,F.round(F.col(column_name), round_no))
+    return df
+  except Exception as roundingofferror:
+    raise roundingofferror
+    
 def datamismatchcolumns(dfsource,dftarget):
   try:
     list_col=[]
