@@ -57,6 +57,14 @@ def roundingoff(df,column_name,round_no):
   except Exception as roundingofferror:
     raise roundingofferror
     
+def trimspace(df):
+  try:
+    for colname in df.columns:
+      trim_df = df.withColumn(colname,f.trim(f.col(colname)))
+    return trim_df
+  except Exception as trimexception:
+    raise trimexception
+    
 def datamismatchcolumns(dfsource,dftarget):
   try:
     list_col=[]
