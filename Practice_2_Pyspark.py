@@ -163,4 +163,82 @@ salarycassifyUDF = udf(salarycassify)
 
 person_df.select("first_name","salary",salarycassifyUDF(col("salary")).alias("Rank")).show(5) 
   
-  
+  ##Challenge2
+
+sales_df = spark.read.format('csv').option("header",True).schema(sales_schema).load("./testdata/salesdata/Sales_April_2019.csv")
+# sales_df = spark.read.format('csv').option("header",True).schema(sales_schema).load("./testdata/salesdata")
+
+#Remove Null values
+sales_df = sales_df.na.drop("any")
+
+sales_df.filter(col("Order ID").isNull() == True).show()
+
+sales_df.filter(col("Order ID")=="Order ID").show(10)
+
+sales_df_without_orderid = sales_df.filter(col("Order ID")!="Order ID")
+
+#Extracting city and state address from store address
+from pyspark.sql.functions import split
+
+sales_df_without_columnnames.select("Purchase Address").show(10,False)
+
+sales_df_without_columnnames.select("Purchase Address",split(col("Purchase Address"),",")).show(10,False)
+
+sales_df_without_columnnames.select("Purchase Address",split(col("Purchase Address"),",").getItem(1)).show(10,False)
+
+sales_df_without_columnnames.select("Purchase Address",split(col("Purchase Address"),",").getItem(2)).show(10,False)
+
+sales_df_without_columnnames.select("Purchase Address",split(split(col("Purchase Address"),",").getItem(2), " ").getItem(1)).show(10,False)
+
+sales_df_without_columnnames = sales_df_without_columnnames.withColumn("City",split(col("Purchase Address"),",").getItem(1))\
+                                                            .withColumn("State",split(split(col("Purchase Address"),",").getItem(2), " ").getItem(1))
+
+sales_df_without_columnnames.columns
+
+# sales_df_with_changed_col_names = sales_df_without_columnnames.withColumnRenamed("Order ID","OrderID")\
+#                             .withColumnRenamed("Quantity Ordered","Quantity")\
+#                             .withColumnRenamed("Order Date","OrderDate")\
+#                             .withColumnRenamed("Purchase Address","StoreAddress")
+from pyspark.sql.types import StringType,IntegerType,FloatType
+from pyspark.sql.functions import to_timestamp,year,month
+
+sales_df_with_changed_col_names = sales_df_without_columnnames\
+                            .withColumn("OrderID",col("Order ID").cast(IntegerType()))\
+                            .withColumn("Quantity",col("Quantity Ordered").cast(IntegerType()))\
+                            .withColumn("Price",col("Price Each").cast(FloatType()))\
+                            .withColumn("OrderDate",to_timestamp(col("Order Date"),"MM/dd/yy HH:mm"))\
+                            .withColumnRenamed("Purchase Address","StoreAddress")\
+                            .drop("Order ID").drop("Quantity Ordered").drop("Price Each").drop("Order Date")
+#Month and Year
+sales_df_with_year_month = sales_df_with_changed_col_names.withColumn("ReportedYear",year(col("OrderDate")))\
+                                                        .withColumn("Month",month(col("OrderDate")))
+
+sales_df_final.write.mode("overwrite").partitionBy("ReportedYear","Month").parquet("./data/ouput")
+
+#Aggregation
+flights_df = spark.read.format('csv').option("header",True).option("inferSchema",True).load("./testdata/flight-summary.csv")
+
+#Count and DistinctCount
+from pyspark.sql.functions import count, countDistinct
+flights_df.select(count("origin_airport"),count("dest_airport")).show()
+flights_df.select(countDistinct("origin_airport"),countDistinct("dest_airport"),count("*")).show()
+
+#Max, min, sum and avg
+from pyspark.sql.functions import min,max,sum, sumDistinct, avg
+flights_df.select(min("flight_count"),max("flight_count"),sum("flight_count"),avg("flight_count")).show()
+flights_df.select(sumDistinct("flight_count")).show()
+
+#Aggregation with group
+flights_df.groupBy("origin_airport").count().orderBy("count",ascending = False).show(5,False)
+
+(flights_df.groupBy("origin_airport")\
+            .agg(max("flight_count").alias("max_flight_count"))\
+            .orderBy("max_flight_count",ascending = False)).show(5)
+flights_df.groupBy("origin_state","origin_city").count()\
+        .where(col("origin_state")=="CA").orderBy("count",ascending = False).show()
+
+(flights_df.groupBy("origin_airport")\
+            .agg(max("flight_count"),
+                 min("flight_count"),
+                 sum("flight_count"),
+                 count("flight_count"))).show(5,False)
