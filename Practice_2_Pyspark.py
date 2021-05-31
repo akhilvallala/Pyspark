@@ -242,3 +242,8 @@ flights_df.groupBy("origin_state","origin_city").count()\
                  min("flight_count"),
                  sum("flight_count"),
                  count("flight_count"))).show(5,False)
+
+
+#Reading from dbfs
+sales_data_path = "dbfs:/FileStore/salesdata/raw"
+sales_df = spark.read.format("csv").option("header",True).schema(schema).load(sales_data_path)
